@@ -1,6 +1,7 @@
 package com.ecom.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +26,8 @@ import com.ecom.model.UserDetails;
 import com.ecom.service.CategoryService;
 import com.ecom.service.ProductService;
 import com.ecom.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
@@ -78,24 +81,28 @@ public class HomeController {
 	}
 	
 	@PostMapping("/saveUser")
-	public String saveUser(@ModelAttribute UserDetails user, @RequestParam("img") MultipartFile file)
+	public String saveUser(@ModelAttribute UserDetails user, @RequestParam("img") MultipartFile file , HttpSession session) throws IOException
 	{
 		String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
 		user.setProfileImage(imageName);
 		userService.saveUser(user);
 		UserDetails saveUser = userService.saveUser(user);
-		if(!ObjectUtils.isEmpty(imageName))
+		
+		if(!ObjectUtils.isEmpty(saveUser))
 		{
 			user.setProfileImage(imageName);
 			userService.saveUser(user);
 			if(!file.isEmpty())
 			{
-//				File saveFile = new ClassPathResource("static/img").getFile();
-//				
-//				Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"product_img"+File.separator+image.getOriginalFilename());
-////					System.out.println(path);
-//				Files.copy(image.getInputStream(), path,StandardCopyOption.REPLACE_EXISTING );
+				File saveFile = new ClassPathResource("static/img").getFile();
+				
+				Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"profile_img"+File.separator+file.getOriginalFilename());
+//					System.out.println(path);
+				Files.copy(file.getInputStream(), path,StandardCopyOption.REPLACE_EXISTING );
 			}
+			session.setAttribute("succMsg", "Profile Created Successfully..");
+		}else {
+			session.setAttribute("errorMsg","Something wrong on server");
 		}
 		
 		return "redirect:/register";

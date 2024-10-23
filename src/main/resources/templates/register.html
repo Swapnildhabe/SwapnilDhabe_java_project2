@@ -15,11 +15,19 @@
 
 				<div class="col-md-7  p-2">
 					<div class="card shadow p-3 mb-5 bg-body rounded">
-						<div class="card-header">
+						<div class="card-header text-center">
 							<p class="fs-4 text-center">Register</p>
+							<th:block th:if="${session.succMsg}">
+								<p class="text-success">[[${session.succMsg}]]</p>
+								<th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+							<th:block th:if="${session.errorMsg}">
+								<p class="text-danger ">[[${session.errorMsg}]]</p>
+								<th:block th:text="${@commonServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
 						</div>
 						<div class="card-body">
-							<form action="">
+							<form action="/saveUser" method="post" enctype="multipart/form-data">
 							
 							
 								<div class="row">
@@ -77,7 +85,7 @@
 								
 								<div class="col">
 										<label class="form-label">Profile Image</label> <input
-											class="form-control" name="profile_image" type="file">
+											class="form-control" name="img" type="file">
 									</div>
 								<button type="submit" 
 									class="btn bg-primary text-white col-md-12">Register</button>
